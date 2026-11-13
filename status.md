@@ -5,6 +5,8 @@
 
 ## Retomada do trabalho
 
+- **Teste do APK `ffaaac3`.** No POCO X5 Pro 5G, o serviço iniciou em primeiro plano. Com a VPN ativa, a interface informou falha do provedor, a consulta de `example.com` falhou e a conexão por IP funcionou. O botão desativou a VPN sem encerrar o app e a resolução voltou. O cliente DoH agora cria o descritor do socket antes de chamar `VpnService.protect()`. Falta confirmar a hipótese com um novo APK em Android.
+
 - **Desligamento no aparelho.** O APK do commit `c6d9a27` manteve o TUN e o serviço em primeiro plano por mais de 9 segundos após tocar em Desativar VPN. O serviço recebeu a rotina de fechamento, mas a Activity ainda chamava `stopService()`. A correção local conecta o botão à ação `STOP_DNS`. A resolução de `example.com` voltou após encerrar o processo pelo ADB. O teste do botão corrigido depende de um novo APK.
 
 - **Base de código.** O commit `d1eeba0` (`etapas 4 e 5`) está em `main` e na referência local de `origin/main`. A última validação local registrou análise estática sem apontamentos, 3 testes Flutter e 4 testes Kotlin/JVM aprovados. A compilação Kotlin direta não substitui a geração do APK.

@@ -9,6 +9,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.Socket
 import java.net.UnknownHostException
@@ -89,6 +90,8 @@ private class ProtectedSockets(private val protect: (Socket) -> Boolean) : Socke
     override fun createSocket(): Socket {
         val socket = Socket()
         try {
+            // Materializa o descritor no Android antes de proteger o socket.
+            socket.bind(InetSocketAddress(0))
             if (!protect(socket)) throw IOException("Socket fora da VPN indisponível")
             return socket
         } catch (error: Exception) {

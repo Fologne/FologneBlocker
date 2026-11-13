@@ -97,6 +97,7 @@ class DnsPipelineTest {
         var attempts = 0
         val resolver = DohForwarder(DohProvider.CLOUDFLARE) {
             attempts++
+            assertTrue(it.isBound)
             assertFalse(it.isConnected)
             false
         }
