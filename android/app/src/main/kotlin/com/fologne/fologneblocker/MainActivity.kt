@@ -111,8 +111,11 @@ class MainActivity : FlutterActivity() {
     private fun stopVpn() {
         if (VpnState.current.phase != Phase.ACTIVE) return
         VpnState.set(Phase.STOPPING)
-        if (!stopService(Intent(this, DnsVpnService::class.java))) {
-            VpnState.set(Phase.IDLE)
+        val request = Intent(this, DnsVpnService::class.java).setAction(DnsVpnService.STOP)
+        try {
+            if (startService(request) == null) VpnState.set(Phase.ACTIVE, Reason.STOP_FAILED)
+        } catch (_: RuntimeException) {
+            VpnState.set(Phase.ACTIVE, Reason.STOP_FAILED)
         }
     }
 
