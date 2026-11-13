@@ -1,4 +1,4 @@
-# ShieldDNS
+# FologneBlocker
 
 ShieldDNS é o nome provisório de um aplicativo experimental para Android. O projeto prevê reduzir anúncios e rastreamento por filtragem local de DNS, com uma categoria opcional de domínios adultos, desativada por padrão.
 
