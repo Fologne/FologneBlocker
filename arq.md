@@ -1,6 +1,6 @@
-# ARQ — Arquitetura do ShieldDNS
+# ARQ — Arquitetura do FologneBlocker
 
-> **Status:** proposta inicial para implementação incremental. Nome do aplicativo provisório.
+> **Status:** arquitetura para implementação incremental do FologneBlocker.
 > **Referências:** [`escopo.md`](./escopo.md) define o produto; [`status.md`](./status.md) define a ordem de implementação.
 
 ## 1. Decisão arquitetural
@@ -71,7 +71,7 @@ sequenceDiagram
 ## 4. Estrutura inicial sugerida
 
 ```text
-shielddns/
+fologneblocker/
 ├── README.md
 ├── status.md
 ├── escopo.md
@@ -129,7 +129,7 @@ shielddns/
 
 Esta estrutura é **sugestão**, não obrigação de criar classes vazias. Criar módulos conforme cada etapa de implementação.
 
-A base separa a entrada Flutter (`lib/main.dart`), o tema do aplicativo (`lib/app/`) e as telas (`lib/features/home/`). A entrada Android é `MainActivity.kt`, no pacote provisório `com.fologne.shield_dns`. A ponte nativa e o motor DNS ganharão seus próprios módulos junto com as primeiras implementações.
+A base separa a entrada Flutter (`lib/main.dart`), o tema (`lib/app/`), as telas (`lib/features/home/`) e o contrato da VPN (`lib/core/bridge/`). No Android, `MainActivity.kt` conduz o consentimento e delega a comunicação a `bridge/NativeBridge.kt` e o túnel a `vpn/DnsVpnService.kt`.
 
 ## 5. Responsabilidades por módulo
 
@@ -147,6 +147,8 @@ A base separa a entrada Flutter (`lib/main.dart`), o tema do aplicativo (`lib/ap
 | Updater | Baixar, validar e trocar snapshots de listas | Comprometer última lista válida |
 
 ## 6. Fluxo da VPN DNS-only
+
+O diagnóstico da Etapa 3 inclui somente o pacote do próprio app na VPN, instala rotas de host IPv4 e IPv6 e encerra após 30 segundos ou por solicitação do usuário. Como o leitor do TUN vem na Etapa 4, o diagnóstico evita publicar um DNS virtual sem resposta para os demais apps. O serviço usa `START_NOT_STICKY` e desativa VPN sempre ativa nas versões Android que respeitam essa configuração. Referências [guia de VPN do Android](https://developer.android.com/develop/connectivity/vpn) e [tipos de serviço em primeiro plano](https://developer.android.com/develop/background-work/services/fgs/service-types).
 
 1. A interface solicita `startProtection()` e exibe o texto de consentimento.
 2. O Kotlin chama `VpnService.prepare()`; o Android apresenta autorização, se necessária.
@@ -226,6 +228,8 @@ Estratégia:
 
 ## 10. Comunicação Flutter/Kotlin
 
+A versão 1 usa `com.fologne.fologneblocker/vpn` para comandos e consulta e `com.fologne.fologneblocker/vpn_state` para eventos. O snapshot inclui `version`, `state` e `reason` opcional. Uma nova assinatura recebe o snapshot atual. Os comandos pedem uma transição e o resultado operacional chega pelo estado publicado pelo Kotlin.
+
 Contrato proposto (nomes podem mudar, desde que sejam consistentes):
 
 **Métodos Flutter → Kotlin:**
@@ -284,7 +288,7 @@ Estados: `idle` → `permission_required` → `starting` → `active` → `stopp
 
 Na base de desenvolvimento, o Flutter 3.44.0 fornece `minSdk` 24 (piso do template) e `targetSdk` e `compileSdk` 36 (Android 16). Fixar a versão do Flutter mantém esses valores e as ferramentas do template reproduzíveis. A configuração gerada usa Dart 3.12.0, Gradle 9.1.0, Android Gradle Plugin 9.0.1, Kotlin 2.3.20 e JDK 17. A faixa de compatibilidade do aplicativo depende dos testes em dispositivo. Referências [código do Flutter 3.44.0](https://github.com/flutter/flutter/blob/3.44.0/packages/flutter_tools/lib/src/android/gradle_utils.dart) e [requisitos de API do Android](https://developer.android.com/google/play/requirements/target-sdk).
 
-- Nome final, pacote Android e licença do código.
+- Identidade visual e licença do código.
 - Endpoint DoH padrão e estratégia de bootstrap sem vazamentos.
 - Comportamento quando DNS privado estiver ativo ou o app terceiro utilizar DoH próprio.
 - Estratégia concreta para IPv6 e DNS TCP/53.

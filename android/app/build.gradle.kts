@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fologne.shield_dns"
+    namespace = "com.fologne.fologneblocker"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.fologne.shield_dns"
+        applicationId = "com.fologne.fologneblocker"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

@@ -1,7 +1,7 @@
-# STATUS — ShieldDNS
+# STATUS — FologneBlocker
 
-> Nome provisório: **ShieldDNS**. Aplicativo Android de filtragem DNS local com Flutter + Kotlin.
-> Estado atual: **preparação da documentação e da base Android**.
+> **FologneBlocker**. Aplicativo Android de filtragem DNS local com Flutter + Kotlin.
+> Estado atual: **ponte Flutter/Kotlin e diagnóstico da VPN implementados, com validação Android pendente**.
 
 ## Como atualizar este arquivo
 
@@ -19,7 +19,7 @@
 - [x] Criar e revisar `arq.md` (arquitetura, módulos, fluxos e escolhas técnicas).
 - [x] Criar e revisar `status.md` (etapas e checklists).
 - [x] Criar `README.md` com resumo, estado experimental, instalação futura e limitações.
-- [ ] Definir nome definitivo, identificador do pacote e identidade visual do aplicativo.
+- [ ] Definir nome definitivo, identificador do pacote e identidade visual do aplicativo. Nome FologneBlocker e pacote `com.fologne.fologneblocker` definidos. Falta a identidade visual.
 - [ ] Definir licença do código original após avaliar compatibilidade das dependências.
 - [x] Documentar fontes externas e obrigações de licença, especialmente listas HaGeZi GPL-3.0.
 - [x] Criar `PRIVACY.md` com tratamento local de DNS, retenção, provedores externos e permissões.
@@ -52,10 +52,12 @@
 - [ ] Implementar canal nativo para solicitar ativação e desativação.
 - [ ] Implementar consulta do estado real do serviço.
 - [ ] Implementar eventos de alteração de estado e erros para Flutter.
-- [ ] Definir contratos tipados de mensagens, códigos de erro e versões.
+- [x] Definir contratos tipados de mensagens, códigos de erro e versões.
 - [ ] Tratar recriação da Activity, reabertura e perda temporária do listener.
-- [ ] Exibir os estados `idle`, `permission_required`, `starting`, `active`, `stopping`, `error` e `revoked`.
-- [ ] Criar testes dos contratos da ponte e transições de estado.
+- [x] Exibir os estados `idle`, `permission_required`, `starting`, `active`, `stopping`, `error` e `revoked`.
+- [ ] Criar testes dos contratos da ponte e transições de estado. Testes Flutter passaram com mensagens simuladas. Falta verificar as transições no Android.
+
+Os comandos e eventos nativos foram implementados. Os itens de integração com o Android permanecem pendentes de compilação e execução em dispositivo ou emulador.
 
 **Critério de conclusão:** telas refletem o estado real da camada Android.
 
@@ -63,8 +65,8 @@
 
 **Objetivo:** estabelecer e encerrar corretamente um túnel de escopo DNS, sem root.
 
-- [ ] Declarar `VpnService` e permissões necessárias no `AndroidManifest.xml`.
-- [ ] Exibir explicação clara da VPN antes do pedido de autorização.
+- [x] Declarar `VpnService` e permissões necessárias no `AndroidManifest.xml`.
+- [x] Exibir explicação clara da VPN antes do pedido de autorização.
 - [ ] Solicitar consentimento pelo `VpnService.prepare()` e tratar cancelamento.
 - [ ] Implementar serviço Kotlin com ciclo de vida e recurso TUN.
 - [ ] Configurar endereço DNS virtual e rotas restritas ao DNS virtual, sem rota padrão de internet.
@@ -73,6 +75,8 @@
 - [ ] Encerrar descritores, sockets e rotinas corretamente ao desativar.
 - [ ] Tratar `onRevoke()`, outra VPN já ativa e reinicialização do serviço.
 - [ ] Testar o comportamento com Wi-Fi, dados móveis e perda de conectividade.
+
+O diagnóstico usa rotas IPv4 e IPv6 restritas ao DNS virtual, apenas para o FologneBlocker, e encerra em até 30 segundos. A compilação Android e os testes do serviço, da notificação e da conectividade estão pendentes devido à falta dos pacotes do SDK Android.
 
 **Critério de conclusão:** VPN é ativada/desativada pelo sistema, sem derrubar indevidamente o restante da conectividade. Isso **não** comprova bloqueio DNS.
 
@@ -226,3 +230,4 @@ O MVP **não** depende de todas as melhorias das etapas finais, mas exige:
 |---|---|---|---|
 | 2026-11-13 | 0 | Escopo, arquitetura e checklist revisados. README, privacidade, segurança, fontes e plano de teste adicionados. | Documentos conferidos e licença das listas consultada no repositório HaGeZi. A disponibilidade do reporte privado no GitHub ainda precisa ser confirmada. |
 | 2026-11-13 | 1 | Base Flutter Android/Kotlin, navegação, tema, lint, teste de widget, GitHub Actions e exclusões do Git. | Windows com Flutter 3.44.0 e Dart 3.12.0. `flutter pub get`, `dart format`, `flutter analyze` e `flutter test` passaram. `git check-ignore` conferiu exclusões e arquivos versionáveis. `flutter build apk --debug` falhou por falta do Android SDK instalado. |
+| 2026-11-13 | 2–3 | Renomeação para FologneBlocker, contrato dos canais v1 e serviço de diagnóstico VPN com consentimento e estado nativo. | `flutter pub get`, `dart format`, `flutter analyze` e três testes Flutter passaram. `flutter build apk --debug` falhou porque os pacotes do SDK Android ainda precisam ser instalados. |

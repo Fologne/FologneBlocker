@@ -1,6 +1,6 @@
-# ESCOPO — ShieldDNS
+# ESCOPO — FologneBlocker
 
-> **ShieldDNS** é um nome provisório. Este documento estabelece o objetivo e os limites do projeto; mudanças devem ser refletidas em `arq.md` e `status.md`.
+> Este documento estabelece o objetivo e os limites do **FologneBlocker**. Mudanças devem ser refletidas em `arq.md` e `status.md`.
 
 ## 1. Visão geral
 

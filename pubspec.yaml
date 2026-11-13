@@ -1,4 +1,4 @@
-name: shield_dns
+name: fologne_blocker
 description: Base experimental de um aplicativo Android de filtragem DNS local.
 publish_to: none
 version: 0.1.0+1

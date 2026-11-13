@@ -1,6 +1,6 @@
 # Privacidade
 
-Na base inicial, o ShieldDNS não solicita autorização de VPN, não processa consultas DNS e não coleta histórico de navegação, estatísticas ou telemetria.
+O diagnóstico do FologneBlocker solicita autorização de VPN pelo Android e abre um túnel restrito ao próprio app por até 30 segundos. Nesta fase, o app não lê o TUN, não encaminha consultas DNS e não coleta histórico, estatísticas ou telemetria.
 
 ## Tratamento previsto para o MVP
 

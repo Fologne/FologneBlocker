@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'vpn_panel.dart';
+
 class ProtectionHome extends StatefulWidget {
   const ProtectionHome({super.key});
 
@@ -18,7 +20,6 @@ class _ProtectionHomeState extends State<ProtectionHome> {
     'Configurações',
   ];
   static const _messages = [
-    'A proteção DNS ainda não está disponível nesta versão.',
     'Nenhum filtro disponível nesta versão.',
     'Nenhuma fonte de bloqueio configurada.',
     'Nenhuma consulta DNS processada.',
@@ -28,7 +29,7 @@ class _ProtectionHomeState extends State<ProtectionHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ShieldDNS')),
+      appBar: AppBar(title: const Text('FologneBlocker')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(24),
@@ -38,11 +39,10 @@ class _ProtectionHomeState extends State<ProtectionHome> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
-            if (_selectedIndex == 0) ...[
-              const Text('Desativado'),
-              const SizedBox(height: 8),
-            ],
-            Text(_messages[_selectedIndex]),
+            if (_selectedIndex == 0)
+              const VpnPanel()
+            else
+              Text(_messages[_selectedIndex - 1]),
           ],
         ),
       ),

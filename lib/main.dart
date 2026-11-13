@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'app/shield_dns_app.dart';
+import 'app/fologne_blocker_app.dart';
 
-void main() => runApp(const ShieldDnsApp());
+void main() => runApp(const FologneBlockerApp());

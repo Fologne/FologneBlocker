@@ -1,8 +1,8 @@
-# Instruções para o Codex — ShieldDNS
+# Instruções para o Codex — FologneBlocker
 
 > **Arquivo canônico de instruções de desenvolvimento:** `agent.md`.
 > **Integração com Codex:** mantenha também `AGENTS.md` na raiz: o Codex descobre automaticamente `AGENTS.md` e deve ler este documento antes de trabalhar.
-> **Projeto:** ShieldDNS (nome provisório), Android, Flutter + Kotlin, open source.
+> **Projeto:** FologneBlocker, Android, Flutter + Kotlin, open source.
 > **Aplicação:** estas regras se aplicam a qualquer alteração de código, configuração, documentação, testes ou releases neste repositório.
 
 ## 1. Missão e limites do produto
