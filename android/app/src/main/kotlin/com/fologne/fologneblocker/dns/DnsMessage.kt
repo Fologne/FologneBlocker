@@ -28,6 +28,10 @@ internal class DnsQuery private constructor(
         return response.copyOf().also { it.put16(0, id) }
     }
 
+    fun domain(): String? = domainFromWire(question.wire)
+
+    fun blocked(): ByteArray = localResponse(0x8083 or (flags and 0x0110), includeOpt = wire.u16(10) != 0)
+
     fun failure(): ByteArray = localResponse(0x8082 or (flags and 0x0110), includeOpt = udpSize != 512 || wire.u16(10) != 0)
 
     private fun localResponse(responseFlags: Int, includeOpt: Boolean): ByteArray {

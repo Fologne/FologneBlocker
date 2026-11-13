@@ -2,7 +2,9 @@
 
 FologneBlocker é um aplicativo experimental para Android. O projeto prevê reduzir anúncios e rastreamento por filtragem local de DNS, com uma categoria opcional de domínios adultos, desativada por padrão.
 
-A VPN local encaminha por HTTPS as consultas DNS UDP/53 que chegam ao DNS virtual. Cloudflare é o padrão e Google Public DNS pode ser escolhido ao ativar a VPN. O bloqueio por regras está previsto para a Etapa 6.
+A VPN local aplica regras às consultas UDP/53 que chegam ao DNS virtual. Consultas bloqueadas recebem NXDOMAIN local. Consultas permitidas seguem por HTTPS para Cloudflare ou Google Public DNS, conforme a escolha ao ativar a VPN.
+
+Em **Filtros**, ative ou desative as categorias HaGeZi. Multi Normal vem habilitada e NSFW vem desabilitada. Uma categoria começa a filtrar depois do primeiro download válido. Em **Listas**, atualize as fontes, consulte o resultado e gerencie exceções e bloqueios próprios. Em **Dados**, consulte os contadores agregados desde o início do processo Android.
 
 ## Desenvolvimento Android
 

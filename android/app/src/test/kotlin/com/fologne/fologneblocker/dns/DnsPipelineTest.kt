@@ -1,5 +1,7 @@
 package com.fologne.fologneblocker.dns
 
+import com.fologne.fologneblocker.lists.MAX_LIST_BYTES
+import com.fologne.fologneblocker.lists.parseDomainList
 import com.fologne.fologneblocker.packet.UdpDnsPacket
 import com.fologne.fologneblocker.packet.put16
 import com.fologne.fologneblocker.packet.u16
@@ -104,6 +106,57 @@ class DnsPipelineTest {
         val previousAttempts = attempts
         assertThrows(IOException::class.java) { resolver.resolve(query()) }
         assertEquals(previousAttempts, attempts)
+    }
+
+    @Test fun matchesNormalizedDomainsAtLabelBoundariesWithManualPrecedence() {
+        assertEquals("ads.example.test", normalizeDomain(" ADS.Example.Test. "))
+        assertEquals("xn--caf-dma.test", normalizeDomain("café.test"))
+        assertNull(normalizeDomain("ads..example.test"))
+        assertNull(normalizeDomain("example.test.."))
+        val rules = RuleSnapshot(
+            allow = setOf("safe.ads.example.test"),
+            block = setOf("ads.example.test"),
+            sources = listOf(setOf("safe.ads.example.test", "remote.test")),
+        )
+        assertTrue(rules.blocks("ads.example.test"))
+        assertTrue(rules.blocks("sub.ads.example.test"))
+        assertTrue(rules.blocks("remote.test"))
+        assertFalse(rules.blocks("sub.safe.ads.example.test"))
+        assertFalse(rules.blocks("notads.example.test"))
+        assertFalse(rules.blocks("ads.example.test.other"))
+    }
+
+    @Test fun returnsLocalNxdomainForRepeatedAAndAaaaQueries() {
+        repeat(2) {
+            for (type in listOf(1, 28)) {
+                val original = query(type)
+                val parsed = DnsQuery.parse(original)!!
+                assertEquals("example.test", parsed.domain())
+                val answer = parsed.blocked()
+                assertEquals(0x1234, answer.u16(0))
+                assertEquals(0x8183, answer.u16(2))
+                assertEquals(0, answer.u16(6))
+                assertArrayEquals(original.copyOfRange(12, original.size), answer.copyOfRange(12, answer.size))
+            }
+        }
+        val literalDotInLabel = query().apply { this[15] = '.'.code.toByte() }
+        assertNull(DnsQuery.parse(literalDotInLabel)!!.domain())
+    }
+
+    @Test fun recordsOnlyAggregatedOutcomes() {
+        val counts = DnsStatistics()
+        counts.record(blockedLocally = false, success = true)
+        counts.record(blockedLocally = true, success = true)
+        counts.record(blockedLocally = false, success = false)
+        assertEquals(mapOf("allowed" to 1L, "blocked" to 1L, "errors" to 1L), counts.snapshot())
+    }
+
+    @Test fun validatesListFormatCountAndSize() {
+        val list = "# Number of entries: 3\r\nAds.example.test.\r\nads.example.test\r\ntracker.example.test"
+        assertEquals(setOf("ads.example.test", "tracker.example.test"), parseDomainList(list))
+        for (invalid in listOf("# vazia", "# Number of entries: 2\na.test", "<html>erro</html>", "x".repeat(MAX_LIST_BYTES + 1))) {
+            assertThrows(IOException::class.java) { parseDomainList(invalid) }
+        }
     }
 
     private fun checksum(bytes: ByteArray): Int {

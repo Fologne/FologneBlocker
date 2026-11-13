@@ -7,6 +7,8 @@ import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
 import com.fologne.fologneblocker.bridge.NativeBridge
+import com.fologne.fologneblocker.lists.FilterRepository
+import com.fologne.fologneblocker.lists.ListUpdateWorker
 import com.fologne.fologneblocker.vpn.DnsVpnService
 import com.fologne.fologneblocker.vpn.Phase
 import com.fologne.fologneblocker.vpn.Reason
@@ -26,6 +28,7 @@ class MainActivity : FlutterActivity() {
             VpnState.set(Phase.PERMISSION)
         }
         super.onCreate(savedInstanceState)
+        ListUpdateWorker.schedule(applicationContext)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -36,7 +39,9 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        bridge = NativeBridge(flutterEngine.dartExecutor.binaryMessenger, ::startVpn, ::stopVpn)
+        bridge = NativeBridge(
+            flutterEngine.dartExecutor.binaryMessenger, ::startVpn, ::stopVpn, FilterRepository.get(this),
+        )
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {

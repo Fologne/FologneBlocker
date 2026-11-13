@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor
 import com.fologne.fologneblocker.MainActivity
 import com.fologne.fologneblocker.dns.DohForwarder
 import com.fologne.fologneblocker.dns.DohProvider
+import com.fologne.fologneblocker.lists.FilterRepository
 import com.fologne.fologneblocker.packet.TUN_MTU
 import com.fologne.fologneblocker.packet.UdpDnsPacket
 
@@ -42,9 +43,12 @@ class DnsVpnService : VpnService() {
                 forwarder.close()
                 stopTunnel(Phase.ERROR, Reason.TUNNEL_FAILED)
             } else {
+                val filters = FilterRepository.get(this)
                 loop = TunDnsLoop(
                     tunnel,
                     forwarder,
+                    filters::rules,
+                    filters.statistics,
                     { resolved ->
                         main.post {
                             if (!destroyed && VpnState.current.phase == Phase.ACTIVE) {

@@ -24,7 +24,11 @@ void main() {
     messenger.setMockMethodCallHandler(events, (_) async => null);
     messenger.setMockMethodCallHandler(methods, (call) async {
       requests.add(call.method);
-      return call.method == 'getProtectionState' ? state('idle') : null;
+      return switch (call.method) {
+        'getProtectionState' => state('idle'),
+        'getStatistics' => {'allowed': 0, 'blocked': 0, 'errors': 0},
+        _ => null,
+      };
     });
   });
 
@@ -55,12 +59,7 @@ void main() {
     await tester.tap(find.widgetWithText(NavigationDestination, 'Dados'));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text(
-        'Os contadores de consultas serão disponibilizados com a filtragem.',
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Bloqueadas: 0'), findsOneWidget);
     expect(find.text('Desativado'), findsNothing);
   });
 

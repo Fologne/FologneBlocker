@@ -196,7 +196,7 @@ Ordem de prioridade proposta:
 
 Os domínios são normalizados e as regras de subdomínio respeitam as fronteiras dos rótulos. Exemplo: a regra `ads.example.com` corresponde a `ads.example.com` e `sub.ads.example.com`, mas **não** a `notads.example.com`.
 
-A resposta de bloqueio deve ser DNS válida e consistente (por exemplo, `NXDOMAIN`), preservando identificador e pergunta conforme o protocolo; o tipo final deve ser testado contra comportamentos de aplicativos. Não usar números artificiais como métricas.
+O motor devolve `NXDOMAIN` local, preserva o identificador e a pergunta e mantém EDNS(0) quando solicitado. Cada resposta escrita no TUN incrementa um contador em memória conforme o resultado. O motor decide a regra em cada consulta e opera sem cache de respostas próprio.
 
 ## 8. Atualização e indexação das listas
 
@@ -217,6 +217,8 @@ Estratégia:
 8. WorkManager para atualização periódica; usuário também pode atualizar manualmente.
 
 **Licenciamento:** HaGeZi publica listas em GPL-3.0. Revisar a licença e condições de redistribuição antes de incorporar qualquer snapshot ao APK. Não presumir que código do aplicativo e dados externos possuem automaticamente a mesma licença.
+
+A implementação agenda atualização diária com rede conectada pelo WorkManager e permite atualização manual por fonte. O download tem limite de 16 MiB e 45 segundos por lista. O parser valida UTF-8, domínios e a contagem declarada quando presente. Depois de validar, o aplicativo sincroniza um arquivo temporário e o renomeia sobre o arquivo anterior no mesmo diretório. O motor publica um snapshot após a troca. SQLite guarda regras próprias, categorias e metadados da última tentativa. A contagem, o hash e a data de sucesso são derivados do arquivo válido.
 
 ## 9. Modelo de dados local (conceitual)
 

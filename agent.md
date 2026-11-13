@@ -68,6 +68,13 @@ A UI Flutter exibe dados e solicita ações. **Toda captura de pacotes, análise
 - Manter comentários e documentação em **português do Brasil**, salvo APIs, identificadores, nomes técnicos e convenções já adotadas.
 - Código legível, nomes consistentes, tratamento explícito de erro e ausência de segredos em texto puro.
 
+### Retomada em outra pasta ou unidade
+
+- Abra a pasta que contém `.git` e `AGENTS.md`. Verifique `git status --short --branch` e `git log -1 --oneline` para confirmar a cópia e preservar alterações locais.
+- Use caminhos relativos ao repositório na documentação. Após mover a pasta, confira os caminhos locais do Flutter e do Java e execute `flutter pub get` para regenerar as referências de pacotes. Se houver build local, confira também o `android/local.properties`, que pode conter caminhos absolutos da máquina.
+- No computador corporativo, prefira gerar o APK de debug no GitHub Actions. Se for necessário instalar ferramentas locais ou aceitar termos em nome do mantenedor, confirme com ele antes. Para os testes por USB, basta um APK disponível, ADB (Android Platform-Tools) e autorização de depuração concedida na tela do aparelho.
+- Quando o APK estiver pronto para instalação, avise o mantenedor para conectar o celular e autorizar a depuração USB. Registre as evidências conforme [`TESTE_ANDROID.md`](./TESTE_ANDROID.md) e [`status.md`](./status.md).
+
 ### 4.3 Após modificar código
 
 1. Executar formatação, análise estática, testes e build **disponíveis e pertinentes** à alteração.

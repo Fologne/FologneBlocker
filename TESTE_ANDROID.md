@@ -13,4 +13,5 @@ Execute os cenários conforme cada recurso estiver disponível. Registre versão
 | Contadores | Registrar os agregados iniciais, executar consultas controladas e verificar a variação por resultado. |
 | Conectividade | Repetir consultas em Wi-Fi e rede móvel, alternar a rede e conferir a recuperação. Desativar a VPN e confirmar que a resolução normal volta. |
 | Ciclo de vida | Fechar e reabrir a interface durante a proteção, revogar a VPN nas configurações do Android e conferir estado e conectividade. |
+| Listas e persistência | Atualizar Multi Normal, conferir data e quantidade, reiniciar o aplicativo sem rede e verificar a disponibilidade da lista e das regras próprias. Conferir NSFW desligada em uma instalação limpa. Alternar a categoria com a VPN ativa e repetir consultas controladas. |
 | Falhas externas | Indisponibilizar o DoH e verificar erro sem fallback em texto puro. Induzir falha na atualização e confirmar que a última lista válida segue em uso. |

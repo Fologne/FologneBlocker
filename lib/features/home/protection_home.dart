@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../filters/filter_panel.dart';
 import 'vpn_panel.dart';
 
 class ProtectionHome extends StatefulWidget {
@@ -19,12 +20,6 @@ class _ProtectionHomeState extends State<ProtectionHome> {
     'Estatísticas',
     'Configurações',
   ];
-  static const _messages = [
-    'Nenhum filtro disponível nesta versão.',
-    'Nenhuma fonte de bloqueio configurada.',
-    'Os contadores de consultas serão disponibilizados com a filtragem.',
-    'Escolha o provedor DNS ao ativar a VPN local.',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +36,15 @@ class _ProtectionHomeState extends State<ProtectionHome> {
             const SizedBox(height: 16),
             if (_selectedIndex == 0)
               const VpnPanel()
+            else if (_selectedIndex == 1 || _selectedIndex == 2)
+              FilterPanel(
+                key: ValueKey(_selectedIndex),
+                showRules: _selectedIndex == 2,
+              )
+            else if (_selectedIndex == 3)
+              const DnsStatisticsPanel()
             else
-              Text(_messages[_selectedIndex - 1]),
+              const Text('Escolha o provedor DNS ao ativar a VPN local.'),
           ],
         ),
       ),

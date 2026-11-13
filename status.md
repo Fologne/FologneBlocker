@@ -1,7 +1,15 @@
 # STATUS — FologneBlocker
 
 > **FologneBlocker**. Aplicativo Android de filtragem DNS local com Flutter + Kotlin.
-> Estado atual: **processamento UDP no TUN e encaminhamento DoH implementados, com validação no celular pendente**.
+> Estado atual: **Etapas 6 e 7 implementadas com testes locais. Nova execução do CI e validação em Android pendentes.**
+
+## Retomada do trabalho
+
+- **Base de código.** O commit `d1eeba0` (`etapas 4 e 5`) está em `main` e na referência local de `origin/main`. A última validação local registrou análise estática sem apontamentos, 3 testes Flutter e 4 testes Kotlin/JVM aprovados. A compilação Kotlin direta não substitui a geração do APK.
+- **Build Android.** O workflow antigo, limitado a verificações Flutter, passou no commit `51a55cc`. A execução #4 com build Android falhou antes de gerar o APK. A anotação aponta código de saída 127 na chamada a `sdkmanager 'ndk;28.2.13676358'`. O workflow agora procura o executável sob `ANDROID_HOME/cmdline-tools`. Falta validar a alteração em uma nova execução e obter o artefato `fologneblocker-debug`. [Execução #4 no GitHub Actions](https://github.com/Fologne/FologneBlocker/actions/runs/43439123755/job/131931811305).
+- **Celular.** Com o APK disponível, avise o mantenedor para conectar o aparelho, ativar a depuração USB e autorizar o computador. Use `adb devices` para verificar a conexão, instale o APK e valide consentimento, ativação e revogação, consultas UDP/53 em IPv4 e IPv6, escolha de provedor DoH, Wi-Fi, dados móveis e restauração da conectividade. Use o [plano de testes em Android](./TESTE_ANDROID.md) e registre resultados reais. Se o ADB estiver indisponível, o APK também pode ser instalado manualmente para os testes que o mantenedor executar no celular.
+- **Mudança de SSD.** Leve a pasta do projeto com `.git`, `.github` e as alterações locais, inclusive estes documentos. A pasta nova deve ser aberta como workspace. `.dart_tool/` e `build/` são gerados localmente e podem ser recriados. Confira `git status --short --branch` no destino antes de retomar.
+- **Próxima validação.** Gerar e instalar o APK e concluir os testes das Etapas 6 e 7 no aparelho. O suporte a TCP/53 segue como limitação documentada.
 
 ## Como atualizar este arquivo
 
@@ -40,8 +48,8 @@
 - [x] Configurar tema, navegação, telas vazias e estado inicial real “Desativado”.
 - [x] Adicionar lint, formatação e análise estática.
 - [x] Criar `.gitignore` e verificar ausência de segredos e arquivos locais.
-- [ ] Configurar CI no GitHub Actions para análise e testes executáveis. Workflow criado e comandos validados localmente. Falta a primeira execução no GitHub.
-- [ ] Gerar e instalar APK de debug em aparelho/emulador. A instalação dos pacotes do Android SDK requer o aceite da licença do SDK.
+- [ ] Configurar CI no GitHub Actions para análise e testes executáveis. Verificações Flutter passaram no workflow anterior. O fluxo com build Android e testes Gradle ainda precisa passar.
+- [ ] Gerar e instalar APK de debug em aparelho/emulador. O fluxo atual usa GitHub Actions para gerar o APK e ADB para instalar e testar no aparelho.
 
 **Critério de conclusão:** projeto compila e abre sem depender de mocks permanentes.
 
@@ -114,14 +122,14 @@ O protótipo das Etapas 4 e 5 substitui o diagnóstico temporário por um túnel
 
 **Objetivo:** bloquear domínios reais e respeitar exceções.
 
-- [ ] Implementar normalização de nomes (minúsculas, ponto final e validações).
-- [ ] Implementar correspondência exata e de subdomínio por fronteira de rótulo.
-- [ ] Definir precedência: permissão manual > bloqueio manual > listas ativadas.
-- [ ] Utilizar uma estrutura de busca eficiente e imutável para regras ativas.
-- [ ] Implementar resposta DNS de bloqueio consistente e configurada/documentada.
-- [ ] Registrar contagem real de consultas permitidas, bloqueadas e falhas.
-- [ ] Testar bloqueios sem afetar domínios semelhantes não incluídos nas regras.
-- [ ] Validar uso de A e AAAA e consultas repetidas/cache.
+- [x] Implementar normalização de nomes (minúsculas, ponto final e validações).
+- [x] Implementar correspondência exata e de subdomínio por fronteira de rótulo.
+- [x] Definir precedência: permissão manual > bloqueio manual > listas ativadas.
+- [x] Utilizar uma estrutura de busca eficiente e imutável para regras ativas.
+- [x] Implementar resposta DNS de bloqueio consistente e configurada/documentada.
+- [x] Registrar contagem real de consultas permitidas, bloqueadas e falhas.
+- [x] Testar bloqueios sem afetar domínios semelhantes não incluídos nas regras.
+- [x] Validar A e AAAA e consultas repetidas. Testes JVM passaram. O motor opera sem cache próprio.
 - [ ] Verificar bloqueio de domínios controlados de teste em aparelho real.
 
 **Critério de conclusão:** o domínio de teste bloqueado falha, o permitido resolve e os contadores refletem eventos reais.
@@ -132,9 +140,9 @@ O protótipo das Etapas 4 e 5 substitui o diagnóstico temporário por um túnel
 
 - [ ] Integrar HaGeZi Multi Normal como fonte inicial de anúncios/rastreadores.
 - [ ] Integrar HaGeZi NSFW como lista separada e **desativada por padrão**.
-- [ ] Validar URLs, formatos e licenças das listas na data de implementação.
+- [x] Validar URLs, formatos e licenças das listas na data de implementação.
 - [ ] Implementar download HTTPS com limite de tamanho e timeout.
-- [ ] Implementar parser de listas de domínios sem executar conteúdo remoto.
+- [x] Implementar parser de listas de domínios sem executar conteúdo remoto.
 - [ ] Validar listas baixadas e realizar atualização atômica com rollback.
 - [ ] Persistir metadados das fontes, configurações e regras próprias com Room/SQLite.
 - [ ] Criar allowlist e blocklist manuais com adicionar/remover/editar.
@@ -142,7 +150,7 @@ O protótipo das Etapas 4 e 5 substitui o diagnóstico temporário por um túnel
 - [ ] Programar atualização periódica via WorkManager respeitando restrições do Android.
 - [ ] Permitir atualização manual e exibir última tentativa, sucesso e erro.
 - [ ] Manter última lista válida utilizável quando offline.
-- [ ] Testar lista malformada, vazia, indisponível, duplicada e muito grande.
+- [ ] Testar lista malformada, vazia, indisponível, duplicada e muito grande. Casos de parser passaram em JVM. Falta induzir indisponibilidade e validar a preservação offline no Android.
 
 **Critério de conclusão:** regras sobrevivem ao reinício e atualizações não quebram a última configuração válida.
 
@@ -232,3 +240,5 @@ O MVP **não** depende de todas as melhorias das etapas finais, mas exige:
 | 2026-11-13 | 1 | Base Flutter Android/Kotlin, navegação, tema, lint, teste de widget, GitHub Actions e exclusões do Git. | Windows com Flutter 3.44.0 e Dart 3.12.0. `flutter pub get`, `dart format`, `flutter analyze` e `flutter test` passaram. `git check-ignore` conferiu exclusões e arquivos versionáveis. `flutter build apk --debug` falhou por falta do Android SDK instalado. |
 | 2026-11-13 | 2–3 | Renomeação para FologneBlocker, contrato dos canais v1 e serviço de diagnóstico VPN com consentimento e estado nativo. | `flutter pub get`, `dart format`, `flutter analyze` e três testes Flutter passaram. `flutter build apk --debug` falhou porque os pacotes do SDK Android ainda precisam ser instalados. |
 | 2026-11-13 | 4–5 | Leitor TUN, respostas UDP IPv4/IPv6, seleção de DoH e build de APK preparado no GitHub Actions. | Análise e testes Flutter passaram. Compilação Kotlin direta e testes JVM executados fora do SDK Android. Geração do APK pelo GitHub Actions e validação física pendentes. |
+| 2026-11-13 | 1–5 | Documentação de retomada e transferência para outro SSD. | Commit `d1eeba0` conferido. Execução #4 do GitHub Actions falhou na etapa de instalação do NDK, sem artefato. Nenhum teste físico nesta sessão. |
+| 2026-11-13 | 6–7 | Motor de regras, NXDOMAIN local, contadores, listas HaGeZi, SQLite, atualizações e controles Flutter. Busca do sdkmanager no CI corrigida. | Análise e 3 testes Flutter passaram. Compilação Kotlin direta e 8 testes JVM passaram. O parser aceitou 210.139 regras Multi Normal e 77.697 NSFW obtidas por HTTPS. SDK local incompleto impediu o build do APK. Persistência, WorkManager, rollback e bloqueio em aparelho real seguem pendentes. |

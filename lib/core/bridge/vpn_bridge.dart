@@ -77,5 +77,14 @@ class VpnBridge {
     {'provider': provider.name},
   );
 
+  Future<Map<Object?, Object?>> filters(
+    String method,
+    Map<String, Object?>? arguments,
+  ) async =>
+      (await _methods.invokeMapMethod<Object?, Object?>(method, arguments))!;
+
+  Future<Map<Object?, Object?>> statistics() async =>
+      (await _methods.invokeMapMethod<Object?, Object?>('getStatistics'))!;
+
   Future<void> stop() => _methods.invokeMethod<void>('stopProtection');
 }
