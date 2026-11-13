@@ -1,0 +1,37 @@
+# Cache e saídas de build do Flutter e Android
+/.dart_tool/
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/.pub/
+/build/
+/coverage/
+/android/.gradle/
+/android/.kotlin/
+/android/build/
+/android/app/build/
+/android/app/.cxx/
+/android/captures/
+/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+*.apk
+*.aab
+
+# Configuração local e artefatos do editor
+/.idea/
+/android/.idea/
+*.iml
+/android/local.properties
+.DS_Store
+Thumbs.db
+*.log
+
+# Credenciais, assinatura Android e diagnósticos de tráfego
+.env
+.env.*
+!.env.example
+key.properties
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pcap
+*.pcapng
