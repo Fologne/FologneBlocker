@@ -5,6 +5,8 @@
 
 ## Retomada do trabalho
 
+- **Crash ao desligar no APK `da73a6d`.** O logcat do POCO registrou `NetworkOnMainThreadException` ao fechar uma conexão TLS durante `STOP_DNS`. O fechamento do cliente DoH foi movido para o fim da thread do túnel. A correção ainda precisa de um APK e de teste físico com uma conexão DoH em uso.
+
 - **Teste do APK `ffaaac3`.** No POCO X5 Pro 5G, o serviço iniciou em primeiro plano. Com a VPN ativa, a interface informou falha do provedor, a consulta de `example.com` falhou e a conexão por IP funcionou. O botão desativou a VPN sem encerrar o app e a resolução voltou. O cliente DoH agora cria o descritor do socket antes de chamar `VpnService.protect()`. Falta confirmar a hipótese com um novo APK em Android.
 
 - **Desligamento no aparelho.** O APK do commit `c6d9a27` manteve o TUN e o serviço em primeiro plano por mais de 9 segundos após tocar em Desativar VPN. O serviço recebeu a rotina de fechamento, mas a Activity ainda chamava `stopService()`. A correção local conecta o botão à ação `STOP_DNS`. A resolução de `example.com` voltou após encerrar o processo pelo ADB. O teste do botão corrigido depende de um novo APK.

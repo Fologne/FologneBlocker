@@ -36,7 +36,6 @@ internal class TunDnsLoop(
         } catch (_: IOException) {
             // O descritor pode já ter sido fechado pela thread de leitura.
         }
-        forwarder.close()
         worker.interrupt()
     }
 
@@ -49,6 +48,9 @@ internal class TunDnsLoop(
             if (!closed) onTunnelFailure()
         } catch (_: SQLiteException) {
             if (!closed) onTunnelFailure()
+        } finally {
+            // O fechamento TLS pode escrever na rede e deve ocorrer fora da thread principal.
+            forwarder.close()
         }
     }
 
