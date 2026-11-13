@@ -30,6 +30,12 @@ internal class TunDnsLoop(
 
     override fun close() {
         closed = true
+        // O Android mantém o serviço vinculado enquanto o TUN estiver aberto.
+        try {
+            tunnel.close()
+        } catch (_: IOException) {
+            // O descritor pode já ter sido fechado pela thread de leitura.
+        }
         forwarder.close()
         worker.interrupt()
     }

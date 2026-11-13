@@ -24,6 +24,10 @@ class DnsVpnService : VpnService() {
     private var finalState: Snapshot? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == STOP) {
+            stopTunnel(Phase.IDLE)
+            return START_NOT_STICKY
+        }
         if (intent?.action != START || VpnState.current.phase != Phase.STARTING) {
             if (loop == null) stopSelf(startId)
             return START_NOT_STICKY
@@ -93,13 +97,18 @@ class DnsVpnService : VpnService() {
     private fun stopTunnel(phase: Phase, reason: Reason? = null) {
         finalState = Snapshot(phase, reason)
         VpnState.set(Phase.STOPPING)
+        closeTunnel()
         stopSelf()
+    }
+
+    private fun closeTunnel() {
+        loop?.close()
+        loop = null
     }
 
     override fun onDestroy() {
         destroyed = true
-        loop?.close()
-        loop = null
+        closeTunnel()
         stopForeground(STOP_FOREGROUND_REMOVE)
         val outcome = finalState ?: when (VpnState.current.phase) {
             Phase.STOPPING -> Snapshot(Phase.IDLE)
@@ -134,6 +143,7 @@ class DnsVpnService : VpnService() {
 
     internal companion object {
         const val START = "com.fologne.fologneblocker.START_DNS"
+        const val STOP = "com.fologne.fologneblocker.STOP_DNS"
         const val PROVIDER = "doh_provider"
     }
 }

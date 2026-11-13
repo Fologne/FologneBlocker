@@ -19,6 +19,10 @@ enum VpnReason {
   conflict('vpn_conflict', 'Desative a outra VPN antes de testar.'),
   startFailed('start_failed', 'O Android não iniciou o serviço de VPN.'),
   tunnelFailed('tunnel_failed', 'Não foi possível estabelecer o túnel.'),
+  stopFailed(
+    'stop_failed',
+    'Não foi possível solicitar o encerramento da VPN.',
+  ),
   stopped('service_stopped', 'O serviço de VPN foi interrompido.'),
   dohFailed(
     'doh_failed',
