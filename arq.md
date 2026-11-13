@@ -148,7 +148,7 @@ A base separa a entrada Flutter (`lib/main.dart`), o tema (`lib/app/`), as telas
 
 ## 6. Fluxo da VPN DNS-only
 
-O diagnóstico da Etapa 3 inclui somente o pacote do próprio app na VPN, instala rotas de host IPv4 e IPv6 e encerra após 30 segundos ou por solicitação do usuário. Como o leitor do TUN vem na Etapa 4, o diagnóstico evita publicar um DNS virtual sem resposta para os demais apps. O serviço usa `START_NOT_STICKY` e desativa VPN sempre ativa nas versões Android que respeitam essa configuração. Referências [guia de VPN do Android](https://developer.android.com/develop/connectivity/vpn) e [tipos de serviço em primeiro plano](https://developer.android.com/develop/background-work/services/fgs/service-types).
+O serviço instala apenas rotas de host para os DNS virtuais IPv4 e IPv6. O leitor TUN usa um buffer de 1.281 bytes para uma MTU de 1.280, com uma consulta DoH em voo por vez e sem fila própria. O serviço usa `START_NOT_STICKY` e desativa VPN sempre ativa nas versões Android que respeitam essa configuração. [Guia de VPN do Android](https://developer.android.com/develop/connectivity/vpn).
 
 1. A interface solicita `startProtection()` e exibe o texto de consentimento.
 2. O Kotlin chama `VpnService.prepare()`; o Android apresenta autorização, se necessária.
@@ -173,6 +173,10 @@ O diagnóstico da Etapa 3 inclui somente o pacote do próprio app na VPN, instal
 - Evitar processamento paralelo que desordene respostas ou crie condições de corrida.
 
 ### 7.2. Encaminhamento DoH
+
+O protótipo usa POST binário via OkHttp, Cloudflare por padrão e Google Public DNS como alternativa por sessão. O cliente usa os IPs IPv4/IPv6 publicados pelos provedores para bootstrap, preserva o hostname para TLS e protege o socket antes da conexão. Cada chamada tem prazo total de cinco segundos. Redirecionamentos e proxy HTTP estão desativados. Em falha de transporte ou resposta inválida, o serviço envia SERVFAIL e exibe um aviso. Uma resposta válida de sucesso ou NXDOMAIN limpa o aviso. A troca de rede ainda precisa de validação física. [RFC 8484](https://www.rfc-editor.org/rfc/rfc8484), [Cloudflare](https://developers.cloudflare.com/1.1.1.1/ip-addresses/) e [Google Public DNS](https://developers.google.com/speed/public-dns/docs/using).
+
+O protótipo aceita UDP/53 sem fragmentação IP, opções IPv4 ou cabeçalhos de extensão IPv6. Se a resposta exceder o tamanho UDP anunciado por EDNS(0) ou a MTU, o motor devolve o bit TC e a pergunta original. A tentativa subsequente por TCP/53 ainda não é atendida. Respostas já truncadas no servidor são tratadas como falha.
 
 - Protocolo: DNS-over-HTTPS sobre TLS, de acordo com endpoint suportado.
 - Usar cliente HTTP com timeouts, certificados válidos e políticas de erro definidas.
@@ -289,9 +293,8 @@ Estados: `idle` → `permission_required` → `starting` → `active` → `stopp
 Na base de desenvolvimento, o Flutter 3.44.0 fornece `minSdk` 24 (piso do template) e `targetSdk` e `compileSdk` 36 (Android 16). Fixar a versão do Flutter mantém esses valores e as ferramentas do template reproduzíveis. A configuração gerada usa Dart 3.12.0, Gradle 9.1.0, Android Gradle Plugin 9.0.1, Kotlin 2.3.20 e JDK 17. A faixa de compatibilidade do aplicativo depende dos testes em dispositivo. Referências [código do Flutter 3.44.0](https://github.com/flutter/flutter/blob/3.44.0/packages/flutter_tools/lib/src/android/gradle_utils.dart) e [requisitos de API do Android](https://developer.android.com/google/play/requirements/target-sdk).
 
 - Identidade visual e licença do código.
-- Endpoint DoH padrão e estratégia de bootstrap sem vazamentos.
 - Comportamento quando DNS privado estiver ativo ou o app terceiro utilizar DoH próprio.
-- Estratégia concreta para IPv6 e DNS TCP/53.
+- Suporte DNS TCP/53 e compatibilidade IPv6 em aparelhos reais.
 - Política de resposta para domínios bloqueados e cache.
 - Frequência de atualização e gerenciamento de listas grandes.
 - Compatibilidade com VPN sempre ativa: **não** prometer kill switch global de tráfego com rotas DNS-only.

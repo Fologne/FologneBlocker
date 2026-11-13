@@ -2,7 +2,7 @@
 
 FologneBlocker é um aplicativo experimental para Android. O projeto prevê reduzir anúncios e rastreamento por filtragem local de DNS, com uma categoria opcional de domínios adultos, desativada por padrão.
 
-A distribuição inicial está planejada pelo GitHub Releases. A interface permite testar o estabelecimento da VPN por até 30 segundos, apenas para o FologneBlocker. O processamento de pacotes, a resolução DoH e o bloqueio de anúncios estão previstos para etapas posteriores.
+A VPN local encaminha por HTTPS as consultas DNS UDP/53 que chegam ao DNS virtual. Cloudflare é o padrão e Google Public DNS pode ser escolhido ao ativar a VPN. O bloqueio por regras está previsto para a Etapa 6.
 
 ## Desenvolvimento Android
 
@@ -18,13 +18,15 @@ flutter build apk --debug
 
 Com um aparelho ou emulador conectado, instale com `adb install -r build/app/outputs/flutter-apk/app-debug.apk`. Veja o [plano de teste manual](TESTE_ANDROID.md).
 
+O workflow **Verificações Flutter** do GitHub Actions disponibiliza o artefato `fologneblocker-debug` após o build e os testes. Baixe o ZIP na execução do workflow e extraia `app-debug.apk`. Para testar via USB em um computador sem SDK de compilação, use o ADB do pacote Android Platform-Tools. [Como baixar artefatos do GitHub Actions](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts).
+
 ## Limites da proteção prevista
 
-- A VPN local terá rotas restritas ao DNS virtual. A filtragem atua sobre domínios e não inspeciona imagens, vídeos ou conteúdo HTTPS.
+- A VPN local usa rotas restritas ao DNS virtual. O protótipo processa DNS sobre UDP em IPv4 e IPv6. Consultas que precisam repetir a operação por TCP/53 podem falhar.
 - DNS privado, DoT ou DoH próprio de aplicativos e conexões diretas por IP podem contornar a filtragem.
 - Anúncios servidos pelo mesmo domínio do conteúdo legítimo podem passar pelo filtro.
 - O Android permite uma VPN ativa por perfil. Usar o FologneBlocker pode interromper outra VPN desse perfil.
 
-O provedor DoH escolhido receberá as consultas permitidas quando o encaminhamento estiver disponível. Veja [Privacidade](PRIVACY.md), [Segurança](SECURITY.md) e [Fontes de terceiros](THIRD_PARTY_NOTICES.md).
+O provedor DoH escolhido recebe as consultas encaminhadas. Falhas de transporte ou respostas inválidas geram erro DNS, sem fallback em texto puro. Veja [Privacidade](PRIVACY.md), [Segurança](SECURITY.md) e [Fontes de terceiros](THIRD_PARTY_NOTICES.md).
 
 A licença do código original está pendente de revisão das dependências e decisão do mantenedor.

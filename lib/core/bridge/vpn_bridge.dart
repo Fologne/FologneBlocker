@@ -4,7 +4,7 @@ enum VpnPhase {
   idle('idle', 'Desativado'),
   permission('permission_required', 'Aguardando autorização'),
   starting('starting', 'Iniciando túnel'),
-  active('active', 'Túnel de diagnóstico ativo'),
+  active('active', 'VPN de DNS ativa'),
   stopping('stopping', 'Encerrando túnel'),
   error('error', 'Falha na VPN'),
   revoked('revoked', 'Autorização revogada');
@@ -20,14 +20,22 @@ enum VpnReason {
   startFailed('start_failed', 'O Android não iniciou o serviço de VPN.'),
   tunnelFailed('tunnel_failed', 'Não foi possível estabelecer o túnel.'),
   stopped('service_stopped', 'O serviço de VPN foi interrompido.'),
-  complete(
-    'diagnostic_complete',
-    'O diagnóstico foi encerrado automaticamente.',
+  dohFailed(
+    'doh_failed',
+    'O provedor DNS não respondeu corretamente. Verifique a conexão.',
   );
 
   const VpnReason(this.code, this.message);
   final String code;
   final String message;
+}
+
+enum DohProvider {
+  cloudflare('Cloudflare'),
+  google('Google Public DNS');
+
+  const DohProvider(this.label);
+  final String label;
 }
 
 class VpnSnapshot {
@@ -64,7 +72,10 @@ class VpnBridge {
     await _methods.invokeMethod<Object>('getProtectionState'),
   );
 
-  Future<void> start() => _methods.invokeMethod<void>('startProtection');
+  Future<void> start(DohProvider provider) => _methods.invokeMethod<void>(
+    'startProtection',
+    {'provider': provider.name},
+  );
 
   Future<void> stop() => _methods.invokeMethod<void>('stopProtection');
 }

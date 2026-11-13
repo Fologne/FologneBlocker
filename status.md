@@ -1,7 +1,7 @@
 # STATUS — FologneBlocker
 
 > **FologneBlocker**. Aplicativo Android de filtragem DNS local com Flutter + Kotlin.
-> Estado atual: **ponte Flutter/Kotlin e diagnóstico da VPN implementados, com validação Android pendente**.
+> Estado atual: **processamento UDP no TUN e encaminhamento DoH implementados, com validação no celular pendente**.
 
 ## Como atualizar este arquivo
 
@@ -76,7 +76,7 @@ Os comandos e eventos nativos foram implementados. Os itens de integração com 
 - [ ] Tratar `onRevoke()`, outra VPN já ativa e reinicialização do serviço.
 - [ ] Testar o comportamento com Wi-Fi, dados móveis e perda de conectividade.
 
-O diagnóstico usa rotas IPv4 e IPv6 restritas ao DNS virtual, apenas para o FologneBlocker, e encerra em até 30 segundos. A compilação Android e os testes do serviço, da notificação e da conectividade estão pendentes devido à falta dos pacotes do SDK Android.
+O protótipo das Etapas 4 e 5 substitui o diagnóstico temporário por um túnel DNS com rotas de host IPv4 e IPv6. Os testes do serviço, da notificação e da conectividade seguem pendentes em Android.
 
 **Critério de conclusão:** VPN é ativada/desativada pelo sistema, sem derrubar indevidamente o restante da conectividade. Isso **não** comprova bloqueio DNS.
 
@@ -85,12 +85,12 @@ O diagnóstico usa rotas IPv4 e IPv6 restritas ao DNS virtual, apenas para o Fol
 **Objetivo:** processar DNS real recebido pela interface TUN.
 
 - [ ] Implementar leitura/escrita robusta dos pacotes da interface TUN.
-- [ ] Interpretar IPv4 e IPv6 e validar comprimentos e cabeçalhos.
-- [ ] Implementar DNS sobre UDP/53 com remontagem da resposta IP/UDP e checksums corretos.
+- [x] Interpretar IPv4 e IPv6 e validar comprimentos e cabeçalhos.
+- [x] Implementar DNS sobre UDP/53 com remontagem da resposta IP/UDP e checksums corretos.
 - [ ] Tratar respostas inválidas, pacotes malformados e buffers limitados.
 - [ ] Suportar perguntas A, AAAA e tipos adicionais sem resposta artificial incorreta.
 - [ ] Implementar tratamento adequado de EDNS(0), IDs, flags e códigos de erro relevantes.
-- [ ] Implementar DNS sobre TCP/53 ou documentar explicitamente o limite antes de declarar compatibilidade ampla.
+- [x] Implementar DNS sobre TCP/53 ou documentar explicitamente o limite antes de declarar compatibilidade ampla. Limite documentado no README e na arquitetura.
 - [ ] Testar consultas reais de aplicativos, DNS IPv4/IPv6 e casos de falha.
 
 **Critério de conclusão:** consultas DNS alcançam o serviço, que gera respostas válidas demonstráveis em aparelho real.
@@ -100,11 +100,11 @@ O diagnóstico usa rotas IPv4 e IPv6 restritas ao DNS virtual, apenas para o Fol
 **Objetivo:** resolver domínios permitidos sem passar por servidor próprio.
 
 - [ ] Implementar cliente DNS-over-HTTPS (DoH) com timeouts e validação TLS.
-- [ ] Definir resolvedor padrão e permitir troca por endpoint compatível.
+- [x] Definir resolvedor padrão e permitir troca por endpoint compatível. Cloudflare e Google Public DNS disponíveis ao iniciar a sessão.
 - [ ] Evitar loops com `VpnService.protect()` nos sockets apropriados.
 - [ ] Tratar bootstrap do endereço do resolvedor e troca entre redes.
 - [ ] Tratar códigos de resposta, timeouts, respostas truncadas e falhas TLS.
-- [ ] Escolher e documentar política de falha: não usar DNS em texto puro silenciosamente.
+- [x] Escolher e documentar política de falha: não usar DNS em texto puro silenciosamente.
 - [ ] Implementar cache DNS de memória respeitando TTL, se necessário.
 - [ ] Testar sites e aplicativos permitidos com VPN ativa em Wi-Fi e rede móvel.
 
@@ -231,3 +231,4 @@ O MVP **não** depende de todas as melhorias das etapas finais, mas exige:
 | 2026-11-13 | 0 | Escopo, arquitetura e checklist revisados. README, privacidade, segurança, fontes e plano de teste adicionados. | Documentos conferidos e licença das listas consultada no repositório HaGeZi. A disponibilidade do reporte privado no GitHub ainda precisa ser confirmada. |
 | 2026-11-13 | 1 | Base Flutter Android/Kotlin, navegação, tema, lint, teste de widget, GitHub Actions e exclusões do Git. | Windows com Flutter 3.44.0 e Dart 3.12.0. `flutter pub get`, `dart format`, `flutter analyze` e `flutter test` passaram. `git check-ignore` conferiu exclusões e arquivos versionáveis. `flutter build apk --debug` falhou por falta do Android SDK instalado. |
 | 2026-11-13 | 2–3 | Renomeação para FologneBlocker, contrato dos canais v1 e serviço de diagnóstico VPN com consentimento e estado nativo. | `flutter pub get`, `dart format`, `flutter analyze` e três testes Flutter passaram. `flutter build apk --debug` falhou porque os pacotes do SDK Android ainda precisam ser instalados. |
+| 2026-11-13 | 4–5 | Leitor TUN, respostas UDP IPv4/IPv6, seleção de DoH e build de APK preparado no GitHub Actions. | Análise e testes Flutter passaram. Compilação Kotlin direta e testes JVM executados fora do SDK Android. Geração do APK pelo GitHub Actions e validação física pendentes. |

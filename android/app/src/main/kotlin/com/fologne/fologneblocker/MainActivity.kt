@@ -17,9 +17,11 @@ import io.flutter.embedding.engine.FlutterEngine
 class MainActivity : FlutterActivity() {
     private var bridge: NativeBridge? = null
     private var awaitingConsent = false
+    private var provider = "cloudflare"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         awaitingConsent = savedInstanceState?.getBoolean("vpn_consent_pending") == true
+        provider = savedInstanceState?.getString("doh_provider") ?: "cloudflare"
         if (awaitingConsent && VpnState.current.phase == Phase.IDLE) {
             VpnState.set(Phase.PERMISSION)
         }
@@ -28,6 +30,7 @@ class MainActivity : FlutterActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("vpn_consent_pending", awaitingConsent)
+        outState.putString("doh_provider", provider)
         super.onSaveInstanceState(outState)
     }
 
@@ -43,11 +46,12 @@ class MainActivity : FlutterActivity() {
     }
 
     @Suppress("DEPRECATION")
-    private fun startVpn() {
+    private fun startVpn(selectedProvider: String) {
         when (VpnState.current.phase) {
             Phase.IDLE, Phase.ERROR, Phase.REVOKED -> Unit
             else -> return
         }
+        provider = selectedProvider
         try {
             val connectivity = getSystemService(ConnectivityManager::class.java)
             val active = connectivity?.getNetworkCapabilities(connectivity.activeNetwork)
@@ -85,7 +89,9 @@ class MainActivity : FlutterActivity() {
     private fun launchService() {
         VpnState.set(Phase.STARTING)
         try {
-            val request = Intent(this, DnsVpnService::class.java).setAction(DnsVpnService.START)
+            val request = Intent(this, DnsVpnService::class.java)
+                .setAction(DnsVpnService.START)
+                .putExtra(DnsVpnService.PROVIDER, provider)
             val service = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(request)
             } else {

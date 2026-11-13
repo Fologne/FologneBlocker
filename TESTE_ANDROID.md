@@ -5,8 +5,8 @@ Execute os cenários conforme cada recurso estiver disponível. Registre versão
 | Cenário | Procedimento e resultado esperado |
 |---|---|
 | Instalação | Instalar o APK de debug, abrir o app e verificar o estado Desativado. |
-| Diagnóstico | Tocar em Testar VPN local, ler a explicação e continuar. Conferir o ícone de VPN do Android e o estado Túnel de diagnóstico ativo. Abrir outro app e verificar a conectividade. Repetir em Wi-Fi e rede móvel. Encerrar pelo FologneBlocker e repetir deixando expirar após 30 segundos. |
-| Outra VPN | Ativar outra VPN, abrir o FologneBlocker e tentar iniciar o diagnóstico. Confirmar a mensagem de conflito e a permanência da outra VPN. |
+| VPN DNS | Tocar em Ativar VPN local, escolher o provedor e continuar. Conferir o ícone de VPN do Android e o estado VPN de DNS ativa. Abrir outro app e verificar a conectividade. Repetir em Wi-Fi e rede móvel. Encerrar pelo FologneBlocker. |
+| Outra VPN | Ativar outra VPN, abrir o FologneBlocker e tentar ativá-lo. Confirmar a mensagem de conflito e a permanência da outra VPN. |
 | Consentimento | Recusar a autorização de VPN e confirmar que a proteção segue desativada. Repetir e autorizar. Conferir o estado ativo somente após estabelecer o túnel. |
 | Consulta permitida | Resolver um domínio controlado com registros A e AAAA e confirmar a resposta e o encaminhamento ao provedor DoH com evidência de teste. |
 | Consulta bloqueada | Bloquear um domínio controlado, repetir a consulta com cache limpo e validar o identificador, a pergunta e o código DNS esperado. Verificar que um domínio semelhante fora da regra ainda resolve. |

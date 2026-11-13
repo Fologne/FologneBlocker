@@ -22,8 +22,8 @@ class _ProtectionHomeState extends State<ProtectionHome> {
   static const _messages = [
     'Nenhum filtro disponível nesta versão.',
     'Nenhuma fonte de bloqueio configurada.',
-    'Nenhuma consulta DNS processada.',
-    'Nenhum provedor DNS configurado.',
+    'Os contadores de consultas serão disponibilizados com a filtragem.',
+    'Escolha o provedor DNS ao ativar a VPN local.',
   ];
 
   @override

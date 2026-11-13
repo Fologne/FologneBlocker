@@ -1,6 +1,6 @@
 # Privacidade
 
-O diagnóstico do FologneBlocker solicita autorização de VPN pelo Android e abre um túnel restrito ao próprio app por até 30 segundos. Nesta fase, o app não lê o TUN, não encaminha consultas DNS e não coleta histórico, estatísticas ou telemetria.
+Ao ativar a VPN, o FologneBlocker solicita autorização do Android quando necessário. O motor Kotlin lê as consultas encaminhadas ao DNS virtual e as envia por HTTPS ao provedor escolhido, Cloudflare por padrão ou Google Public DNS. O provedor recebe o conteúdo dessas consultas e o IP público da conexão. Os pacotes são processados em memória, sem gravação de histórico ou envio de telemetria própria. [Privacidade do Cloudflare 1.1.1.1](https://developers.cloudflare.com/1.1.1.1/privacy/public-dns-resolver/) e [privacidade do Google Public DNS](https://developers.google.com/speed/public-dns/privacy).
 
 ## Tratamento previsto para o MVP
 

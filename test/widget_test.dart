@@ -55,7 +55,12 @@ void main() {
     await tester.tap(find.widgetWithText(NavigationDestination, 'Dados'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Nenhuma consulta DNS processada.'), findsOneWidget);
+    expect(
+      find.text(
+        'Os contadores de consultas serão disponibilizados com a filtragem.',
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Desativado'), findsNothing);
   });
 
@@ -73,7 +78,7 @@ void main() {
 
     await tester.pumpWidget(const FologneBlockerApp());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Testar VPN local'));
+    await tester.tap(find.text('Ativar VPN local'));
     await tester.pumpAndSettle();
     expect(requests, isNot(contains('startProtection')));
     await tester.tap(find.text('Continuar'));
@@ -86,8 +91,8 @@ void main() {
     await emit('starting');
     expect(find.text('Iniciando túnel'), findsOneWidget);
     await emit('active');
-    expect(find.text('Túnel de diagnóstico ativo'), findsOneWidget);
-    await tester.tap(find.text('Encerrar teste'));
+    expect(find.text('VPN de DNS ativa'), findsOneWidget);
+    await tester.tap(find.text('Desativar VPN'));
     await tester.pumpAndSettle();
     expect(requests, contains('stopProtection'));
     await emit('stopping');

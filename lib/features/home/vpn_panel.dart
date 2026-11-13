@@ -63,28 +63,58 @@ class _VpnPanelState extends State<VpnPanel> {
     setState(() => _busy = true);
     try {
       if (start) {
-        final accepted = await showDialog<bool>(
+        final provider = await showDialog<DohProvider>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Testar a VPN local'),
-            content: const Text(
-              'O Android pode pedir autorização para criar um túnel DNS '
-              'local. O teste dura até 30 segundos e abrange apenas o '
-              'FologneBlocker. O bloqueio de anúncios ainda está em desenvolvimento.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancelar'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Continuar'),
-              ),
-            ],
-          ),
+          builder: (context) {
+            var selected = DohProvider.cloudflare;
+            return StatefulBuilder(
+              builder: (context, setDialogState) {
+                return AlertDialog(
+                  title: const Text('Ativar a VPN local'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'O Android pode pedir autorização. O provedor escolhido '
+                        'receberá por HTTPS as consultas encaminhadas pela VPN. '
+                        'O bloqueio de anúncios ainda está em desenvolvimento.',
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButton<DohProvider>(
+                        value: selected,
+                        isExpanded: true,
+                        items: [
+                          for (final provider in DohProvider.values)
+                            DropdownMenuItem(
+                              value: provider,
+                              child: Text(provider.label),
+                            ),
+                        ],
+                        onChanged: (provider) {
+                          if (provider != null) {
+                            setDialogState(() => selected = provider);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
+                    FilledButton(
+                      onPressed: () => Navigator.pop(context, selected),
+                      child: const Text('Continuar'),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         );
-        if (mounted && accepted == true) await _bridge.start();
+        if (mounted && provider != null) await _bridge.start(provider);
       } else {
         await _bridge.stop();
       }
@@ -135,7 +165,7 @@ class _VpnPanelState extends State<VpnPanel> {
         const SizedBox(height: 12),
         FilledButton(
           onPressed: canAct && !_busy ? () => _request(start: !active) : null,
-          child: Text(active ? 'Encerrar teste' : 'Testar VPN local'),
+          child: Text(active ? 'Desativar VPN' : 'Ativar VPN local'),
         ),
       ],
     );

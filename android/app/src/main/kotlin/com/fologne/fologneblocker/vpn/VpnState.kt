@@ -8,7 +8,7 @@ internal enum class Phase(val wire: String) {
 internal enum class Reason(val wire: String) {
     CANCELLED("permission_cancelled"), CONFLICT("vpn_conflict"),
     START_FAILED("start_failed"), TUNNEL_FAILED("tunnel_failed"),
-    STOPPED("service_stopped"), COMPLETE("diagnostic_complete"),
+    STOPPED("service_stopped"), DOH_FAILED("doh_failed"),
 }
 
 internal data class Snapshot(val phase: Phase, val reason: Reason? = null) {

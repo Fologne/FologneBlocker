@@ -6,7 +6,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
-internal class NativeBridge(messenger: BinaryMessenger, start: () -> Unit, stop: () -> Unit) {
+internal class NativeBridge(messenger: BinaryMessenger, start: (String) -> Unit, stop: () -> Unit) {
     private val methods = MethodChannel(messenger, "com.fologne.fologneblocker/vpn")
     private val events = EventChannel(messenger, "com.fologne.fologneblocker/vpn_state")
     private var sink: EventChannel.EventSink? = null
@@ -17,7 +17,7 @@ internal class NativeBridge(messenger: BinaryMessenger, start: () -> Unit, stop:
             when (call.method) {
                 "getProtectionState" -> result.success(VpnState.current.encode())
                 "startProtection" -> {
-                    start()
+                    start(call.argument<String>("provider") ?: "cloudflare")
                     result.success(null)
                 }
                 "stopProtection" -> {

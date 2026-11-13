@@ -3,13 +3,14 @@ name: Verificações Flutter
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   flutter:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -22,3 +23,16 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze
       - run: flutter test
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: sdkmanager 'ndk;28.2.13676358'
+      - run: flutter build apk --debug
+      - run: bash gradlew :app:testDebugUnitTest
+        working-directory: android
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fologneblocker-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
